@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Русская Рулетка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #091829, #020508, #091829);
+            background-size: 400% 400%;
+            animation: gradientMove 20s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 25%; }
+            50% { background-position: 50% 100%; }
+            75% { background-position: 25% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .balance-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            padding: 15px 25px;
+            border-radius: 20px;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.3);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .balance-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .balance {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .balance-amount {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .revolver-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 60px;
+            margin-top: 40px;
+        }
+
+        .revolver-img {
+            width: 280px;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: opacity 0.3s;
+        }
+
+        .revolver-img.hidden {
+            opacity: 0;
+        }
+
+        .animation-img {
+            width: 280px;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .animation-img.show {
+            opacity: 1;
+        }
+
+        .bet-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .bet-button {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 16px 120px;
+            font-size: 24px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .bet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .bet-button:active {
+            transform: translateY(0);
+        }
+
+        .bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .bet-button:disabled:hover {
+            transform: none;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            display: none;
+            z-index: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: block;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .bet-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 30px 30px 0 0;
+            padding: 25px 20px 40px;
+            width: 100%;
+            max-width: 100%;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 600;
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .bet-panel.show {
+            transform: translateY(0);
+        }
+
+        .handle-bar {
+            width: 40px;
+            height: 4px;
+            background-color: #4a4a4a;
+            border-radius: 2px;
+            margin: 0 auto 25px;
+            cursor: pointer;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #8a8a8a;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bet-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid #3a3a3a;
+            background-color: #1f1f1f;
+            color: white;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .bet-input:focus {
+            outline: none;
+            border-color: #1e91d4;
+            background-color: #252525;
+        }
+
+        .bet-input::placeholder {
+            color: #6a6a6a;
+        }
+
+        .bet-input::-webkit-outer-spin-button,
+        .bet-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .bet-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .bet-amount-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .amount-btn {
+            background-color: #2a2a2a;
+            color: white;
+            border: 2px solid #3a3a3a;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .amount-btn:hover {
+            background-color: #1e91d4;
+            border-color: #1e91d4;
+            transform: translateY(-2px);
+        }
+
+        .amount-btn:active {
+            transform: translateY(0);
+        }
+
+        .separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #3a3a3a, transparent);
+            margin: 20px 0;
+        }
+
+        .bullets-selector {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .bullet-btn {
+            background-color: #2a2a2a;
+            color: white;
+            border: 2px solid #3a3a3a;
+            padding: 14px 0;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 70px;
+        }
+
+        .bullet-btn.active {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            border-color: #1e91d4;
+            color: white;
+            box-shadow: 0 4px 16px rgba(30, 145, 212, 0.4);
+        }
+
+        .bullet-btn:hover {
+            transform: translateY(-2px);
+            border-color: #1e91d4;
+        }
+
+        .bullet-btn:active {
+            transform: translateY(0);
+        }
+
+        .panel-bet-button {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .panel-bet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .panel-bet-button:active {
+            transform: translateY(0);
+        }
+
+        .panel-bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(30, 145, 212, 0.3);
+        }
+
+        .info-badge:hover {
+            transform: scale(1.1);
+        }
+
+        .floating-gun {
+            position: fixed;
+            right: 1%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 460px;
+            height: auto;
+            opacity: 0.25;
+            transition: all 0.3s ease;
+            z-index: 10;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(30, 145, 212, 0.2));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(15px); }
+        }
+
+        .floating-gun:hover {
+            opacity: 0.8;
+            transform: translateY(-50%) scale(1.05) translateX(15px);
+            filter: drop-shadow(0 0 30px rgba(30, 145, 212, 0.5));
+        }
+
+        .floating-gun.recoil {
+            animation: recoil 0.4s ease-out !important;
+        }
+
+        @keyframes recoil {
+            0% { transform: translateY(-50%) rotate(0deg) translateX(0); }
+            40% { transform: translateY(-50%) rotate(-20deg) translateX(-40px); }
+            100% { transform: translateY(-50%) rotate(0deg) translateX(0); }
+        }
+
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            transition: background-color 1s ease;
+        }
+
+        .result-overlay.show {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .result-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .win-gif {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .result-overlay.show .win-gif {
+            opacity: 1;
+        }
+
+        .result-text {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .result-overlay.show .result-text {
+            opacity: 1;
+        }
+
+        .result-text.win {
+            color: #ffffff;
+        }
+
+        .result-text.lose {
+            color: #ff4444;
+        }
+
+        .counter {
+            font-size: 48px;
+            color: #1e91d4;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+        }
+
+        .result-overlay.show .button-group {
+            opacity: 1;
+        }
+
+        .continue-button {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+        }
+
+        .continue-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .bonus-button {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+        }
+
+        .bonus-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .skip-button {
+            background-color: #3a3a3a;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .skip-button:hover {
+            background-color: #4a4a4a;
+        }
+
+        .bonus-text {
+            font-size: 48px;
+            color: #1e91d4;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            padding: 35px;
+            border-radius: 24px;
+            color: white;
+            max-width: 500px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal.show .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: #1e91d4;
+            font-weight: bold;
+        }
+
+        .modal-text {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #c0c0c0;
+        }
+
+        .close-modal {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .close-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+        }
+
+        .deposit-button {
+            background: linear-gradient(135deg, #1e91d4, #1a7bb8);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 24px rgba(30, 145, 212, 0.4);
+        }
+
+        .deposit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 145, 212, 0.5);
+        }
+
+        .gun-selector {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+            gap: 10px;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gun-selector.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .gun-option {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 5px;
+            background-color: #2a2a2a;
+        }
+
+        .gun-option:hover {
+            opacity: 1;
+            border-color: #1e91d4;
+            box-shadow: 0 4px 16px rgba(30, 145, 212, 0.3);
+        }
+
+        .gun-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @media (max-width: 768px) {
+            .floating-gun {
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="balance-container" id="balanceContainer">
+        <div class="balance">Баланс</div>
+        <span class="balance-amount"><span id="balance">1</span> TON</span>
+    </div>
+
+    <div class="game-container">
+        <div class="revolver-container">
+            <img src="https://i.postimg.cc/tR59kxY1/Snimok-ekrana-2025-11-20-221451-Photoroom.png"
+                 alt="Revolver"
+                 class="revolver-img"
+                 id="revolverImg">
+            <img src=""
+                 alt="Animation"
+                 class="animation-img"
+                 id="animationImg">
+        </div>
+
+        <div class="bet-section">
+            <button class="bet-button" id="betButton">BET</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <div class="bet-panel" id="betPanel">
+        <div class="handle-bar" id="handleBar"></div>
+        <button class="info-badge" id="infoButton">i</button>
+
+        <div class="panel-section">
+            <div class="section-title">Сумма ставки</div>
+            <input type="number"
+                   class="bet-input"
+                   id="betInput"
+                   placeholder="Введите ставку"
+                   min="0.01"
+                   step="0.01">
+        </div>
+
+        <div class="panel-section">
+            <div class="bet-amount-buttons">
+                <button class="amount-btn" data-amount="0.1">0.1</button>
+                <button class="amount-btn" data-amount="0.5">0.5</button>
+                <button class="amount-btn" data-amount="all">ALL</button>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="panel-section">
+            <div class="section-title">Выберите количество пуль</div>
+            <div class="bullets-selector">
+                <button class="bullet-btn active" data-bullets="1">1</button>
+                <button class="bullet-btn" data-bullets="2">2</button>
+                <button class="bullet-btn" data-bullets="3">3</button>
+            </div>
+        </div>
+
+        <button class="panel-bet-button" id="panelBetButton">BET</button>
+    </div>
+
+    <img src="https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png"
+         alt="Floating Gun"
+         class="floating-gun"
+         id="floatingGun">
+
+    <div class="gun-selector" id="gunSelector">
+        <div class="gun-option" data-gun="0">
+            <img src="https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png" alt="Gun 1">
+        </div>
+        <div class="gun-option" data-gun="1">
+            <img src="https://i.postimg.cc/q7sZX2jq/pngwing-com-Photoroom.png" alt="Gun 2">
+        </div>
+        <div class="gun-option" data-gun="2">
+            <img src="https://i.postimg.cc/QMJ0Whd6/png-klev-club-n906-p-ak47-png-24.png" alt="Gun 3">
+        </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div id="resultContent"></div>
+        <div class="button-group">
+            <button class="continue-button" id="continueButton">ПРОДОЛЖИТЬ</button>
+            <button class="bonus-button" id="bonusButton">БОНУСНАЯ ИГРА</button>
+            <button class="skip-button" id="skipBonusButton">НЕ ИГРАТЬ</button>
+        </div>
+    </div>
+
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-title">Как играть</div>
+            <div class="modal-text">
+                <p><strong>Коэффициенты:</strong></p>
+                <p>1 пуля - x1.2</p>
+                <p>2 пули - x1.6</p>
+                <p>3 пули - x2.1</p>
+                <br>
+                <p>Введите ставку, выберите количество пуль и нажмите BET. Если револьвер не выстрелит - вы выиграете!</p>
+                <br>
+                <p>Бонусная игра активируется на 1, 5, 10, 20 и 30 раунде.</p>
+            </div>
+            <button class="close-modal" id="closeModal">Закрыть</button>
+        </div>
+    </div>
+
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-title">Пополнение баланса</div>
+            <div class="modal-text">
+                <p>Пополните свой баланс через CryptoBot</p>
+                <br>
+                <p>Нажмите кнопку ниже для перехода к боту</p>
+            </div>
+            <a href="https://t.me/send?start=IVC1RvnZnd43" target="_blank" class="deposit-button">Перейти к CryptoBot</a>
+            <br><br>
+            <button class="close-modal" id="closeDepositModal">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        const gunImages = [
+            'https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png',
+            'https://i.postimg.cc/q7sZX2jq/pngwing-com-Photoroom.png',
+            'https://i.postimg.cc/QMJ0Whd6/png-klev-club-n906-p-ak47-png-24.png'
+        ];
+
+        const animations = {
+            1: {
+                win: [
+                    'https://i.postimg.cc/GpfVpb7S/ezgif-19af9c1ecf4e2113.gif',
+                    'https://i.postimg.cc/nL9T0B2d/ezgif-117a90e4f3a7eb03.gif',
+                    'https://i.postimg.cc/nL9T0B2d/ezgif-117a90e4f3a7eb03.gif'
+                ],
+                lose: [
+                    'https://i.postimg.cc/xd5BVKMc/ezgif-47593ddfcdc35331.gif'
+                ]
+            },
+            2: {
+                win: [
+                    'https://i.postimg.cc/Mp2Gn84V/ezgif-16f89f428a8ff265.gif'
+                ],
+                lose: [
+                    'https://i.postimg.cc/htsh65yL/ezgif-10b28d1e6634f9c2.gif',
+                    'https://i.postimg.cc/W1CxN2Hs/ezgif-14aa863391f04ee5.gif'
+                ]
+            },
+            3: {
+                win: [
+                    'https://i.postimg.cc/1zLgrNYx/ezgif-1b941a3fe9f433d0.gif'
+                ],
+                lose: [
+                    'https://i.postimg.cc/tTwzPTWB/ezgif-13476e7037fea85f.gif',
+                    'https://i.postimg.cc/mZVLbHNR/ezgif-15da217842adcaa9.gif'
+                ]
+            }
+        };
+
+        const multipliers = { 1: 1.2, 2: 1.6, 3: 2.1 };
+
+        let balance = 1;
+        let selectedBullets = 1;
+        let lastBetAmount = 0;
+        let gameCount = 0;
+        let bonusUsed = false;
+        let currentGun = 0;
+        let isPlaying = false;
+
+        const balanceEl = document.getElementById('balance');
+        const balanceContainer = document.getElementById('balanceContainer');
+        const betButton = document.getElementById('betButton');
+        const panelBetButton = document.getElementById('panelBetButton');
+        const betInput = document.getElementById('betInput');
+        const revolverImg = document.getElementById('revolverImg');
+        const animationImg = document.getElementById('animationImg');
+        const resultOverlay = document.getElementById('resultOverlay');
+        const resultContent = document.getElementById('resultContent');
+        const continueButton = document.getElementById('continueButton');
+        const bonusButton = document.getElementById('bonusButton');
+        const skipBonusButton = document.getElementById('skipBonusButton');
+        const floatingGun = document.getElementById('floatingGun');
+        const infoButton = document.getElementById('infoButton');
+        const infoModal = document.getElementById('infoModal');
+        const depositModal = document.getElementById('depositModal');
+        const closeModal = document.getElementById('closeModal');
+        const closeDepositModal = document.getElementById('closeDepositModal');
+        const bulletButtons = document.querySelectorAll('.bullet-btn');
+        const gunSelector = document.getElementById('gunSelector');
+        const gunOptions = document.querySelectorAll('.gun-option');
+        const betPanel = document.getElementById('betPanel');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const handleBar = document.getElementById('handleBar');
+        const amountButtons = document.querySelectorAll('.amount-btn');
+
+        updateUI();
+
+        balanceContainer.addEventListener('click', () => {
+            depositModal.classList.add('show');
+        });
+
+        betButton.addEventListener('click', () => {
+            if (isPlaying) return;
+            openBetPanel();
+        });
+
+        panelBetButton.addEventListener('click', () => {
+            if (isPlaying) return;
+            playBet();
+        });
+
+        function openBetPanel() {
+            betPanel.classList.add('show');
+            modalOverlay.classList.add('show');
+            setTimeout(() => betInput.focus(), 400);
+        }
+
+        function closeBetPanel() {
+            betPanel.classList.remove('show');
+            modalOverlay.classList.remove('show');
+        }
+
+        modalOverlay.addEventListener('click', closeBetPanel);
+
+        handleBar.addEventListener('click', closeBetPanel);
+
+        amountButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isPlaying) return;
+                const amount = btn.dataset.amount;
+                if (amount === 'all') {
+                    betInput.value = balance.toFixed(2);
+                } else {
+                    betInput.value = amount;
+                }
+            });
+        });
+
+        bulletButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isPlaying) return;
+                bulletButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedBullets = parseInt(btn.dataset.bullets);
+            });
+        });
+
+        infoButton.addEventListener('click', () => {
+            infoModal.classList.add('show');
+        });
+
+        closeModal.addEventListener('click', () => {
+            infoModal.classList.remove('show');
+        });
+
+        closeDepositModal.addEventListener('click', () => {
+            depositModal.classList.remove('show');
+        });
+
+        floatingGun.addEventListener('click', () => {
+            gunSelector.classList.toggle('show');
+        });
+
+        gunOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                currentGun = parseInt(option.dataset.gun);
+                floatingGun.src = gunImages[currentGun];
+                gunSelector.classList.remove('show');
+            });
+        });
+
+        betInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isPlaying) {
+                playBet();
+            }
+        });
+
+        function updateUI() {
+            const buttonsToDisable = [betButton, panelBetButton, betInput, ...bulletButtons, ...amountButtons];
+
+            buttonsToDisable.forEach(btn => {
+                btn.disabled = isPlaying;
+            });
+
+            [...bulletButtons, ...amountButtons].forEach(btn => {
+                btn.style.opacity = isPlaying ? '0.5' : '1';
+                btn.style.cursor = isPlaying ? 'not-allowed' : 'pointer';
+            });
+        }
+
+        function playBet() {
+            const betAmount = parseFloat(betInput.value);
+
+            if (!betAmount || betAmount <= 0) {
+                alert('Введите корректную ставку!');
+                betInput.focus();
+                return;
+            }
+
+            if (betAmount > balance) {
+                alert('Недостаточно средств!');
+                betInput.focus();
+                return;
+            }
+
+            closeBetPanel();
+
+            lastBetAmount = betAmount;
+            balance -= betAmount;
+            balance = parseFloat(balance.toFixed(2));
+            balanceEl.textContent = balance;
+
+            isPlaying = true;
+            updateUI();
+
+            playGame(betAmount, selectedBullets);
+        }
+
+        async function playGame(betAmount, bullets) {
+            const isWin = Math.random() < 0.3;
+
+            let animationUrl;
+            if (isWin) {
+                const winAnimations = animations[bullets].win;
+                animationUrl = winAnimations[Math.floor(Math.random() * winAnimations.length)];
+            } else {
+                const loseAnimations = animations[bullets].lose;
+                animationUrl = loseAnimations[Math.floor(Math.random() * loseAnimations.length)];
+            }
+
+            revolverImg.classList.add('hidden');
+
+            animationImg.src = animationUrl;
+            animationImg.classList.add('show');
+
+            await sleep(2000);
+
+            if (!isWin) {
+                floatingGun.classList.add('recoil');
+                setTimeout(() => floatingGun.classList.remove('recoil'), 400);
+            }
+
+            await sleep(3000);
+
+            animationImg.classList.remove('show');
+            await sleep(300);
+            revolverImg.classList.remove('hidden');
+
+            showResult(isWin, betAmount, bullets);
+        }
+
+        function showResult(isWin, betAmount, bullets) {
+            gameCount++;
+            let winAmount = 0;
+
+            resultContent.innerHTML = '';
+
+            if (isWin) {
+                winAmount = parseFloat((betAmount * multipliers[bullets]).toFixed(2));
+
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'result-content-wrapper';
+
+                const gifImg = document.createElement('img');
+                gifImg.src = 'https://i.postimg.cc/t4wR1jVQ/ezgif-708ecbacda95219b.gif';
+                gifImg.className = 'win-gif';
+                contentWrapper.appendChild(gifImg);
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'result-text win';
+                textDiv.innerHTML = 'ВЫИГРЫШ<br>+<span class="counter" id="counter">0</span> TON';
+                contentWrapper.appendChild(textDiv);
+
+                resultContent.appendChild(contentWrapper);
+
+                balance += winAmount;
+                balance = parseFloat(balance.toFixed(2));
+
+                setTimeout(() => {
+                    animateCounter(0, winAmount, 2000);
+                }, 500);
+
+                setTimeout(() => {
+                    balanceEl.textContent = balance;
+                }, 2500);
+            } else {
+                const textDiv = document.createElement('div');
+                textDiv.className = 'result-text lose';
+                textDiv.textContent = 'ПРОИГРЫШ';
+                resultContent.appendChild(textDiv);
+            }
+
+            const isBonusRound = !bonusUsed && [1, 5, 10, 20, 30].includes(gameCount);
+
+            bonusButton.style.display = isBonusRound ? 'block' : 'none';
+            skipBonusButton.style.display = isBonusRound ? 'block' : 'none';
+
+            resultOverlay.classList.add('show');
+        }
+
+        function animateCounter(start, end, duration) {
+            const counter = document.getElementById('counter');
+            if (!counter) return;
+
+            const startTime = Date.now();
+
+            function update() {
+                const now = Date.now();
+                const progress = Math.min((now - startTime) / duration, 1);
+                const current = parseFloat((start + (end - start) * progress).toFixed(2));
+                counter.textContent = current.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            update();
+        }
+
+        continueButton.addEventListener('click', async () => {
+            resultOverlay.classList.remove('show');
+
+            await sleep(500);
+
+            isPlaying = false;
+            updateUI();
+            betInput.value = '';
+        });
+
+        bonusButton.addEventListener('click', async () => {
+            bonusUsed = true;
+            resultOverlay.classList.remove('show');
+
+            await sleep(500);
+
+            balance -= lastBetAmount;
+            balance = parseFloat(balance.toFixed(2));
+            balanceEl.textContent = balance;
+
+            playGame(lastBetAmount, selectedBullets);
+        });
+
+        skipBonusButton.addEventListener('click', async () => {
+            resultOverlay.classList.remove('show');
+
+            await sleep(500);
+
+            isPlaying = false;
+            updateUI();
+            betInput.value = '';
+        });
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === infoModal) {
+                infoModal.classList.remove('show');
+            }
+            if (e.target === depositModal) {
+                depositModal.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
