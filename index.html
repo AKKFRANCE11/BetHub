@@ -34,20 +34,20 @@
             top: 20px;
             left: 20px;
             background: linear-gradient(135deg, #ff7b00, #ffb700);
-            padding: 7.5px 12.5px;
+            padding: 9.75px 16.25px;
             border-radius: 10px;
             z-index: 100;
             box-shadow: 0 4px 12px rgba(255, 123, 0, 0.3);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 7.5px;
+            gap: 9.75px;
             transition: all 0.3s;
-            transform: scale(0.7);
+            transform: scale(0.91);
         }
 
         .balance-container:hover {
-            transform: scale(0.7) translateY(-2px);
+            transform: scale(0.91) translateY(-2px);
             box-shadow: 0 6px 16px rgba(255, 123, 0, 0.5);
         }
 
@@ -57,15 +57,15 @@
 
         .balance {
             color: white;
-            font-size: 8px;
+            font-size: 10.4px;
             font-weight: 500;
-            margin-bottom: 2.5px;
+            margin-bottom: 3.25px;
             opacity: 0.9;
         }
 
         .balance-amount {
             color: #ffffff;
-            font-size: 14px;
+            font-size: 18.2px;
             font-weight: bold;
             display: block;
         }
@@ -74,10 +74,10 @@
             background: white;
             color: #ff7b00;
             border: none;
-            width: 18px;
-            height: 18px;
+            width: 23.4px;
+            height: 23.4px;
             border-radius: 50%;
-            font-size: 12px;
+            font-size: 15.6px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -90,32 +90,6 @@
         .add-balance-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ff7b00, #ffb700);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(255, 123, 0, 0.3);
-            z-index: 100;
-        }
-
-        .close-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(255, 123, 0, 0.5);
         }
 
         .game-container {
@@ -548,42 +522,6 @@
             transform: scale(1.1);
         }
 
-        .floating-gun {
-            position: fixed;
-            right: 1%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 460px;
-            height: auto;
-            opacity: 0.25;
-            transition: all 0.3s ease;
-            z-index: 10;
-            cursor: pointer;
-            animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px rgba(255, 123, 0, 0.2));
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(-50%) translateX(0); }
-            50% { transform: translateY(-50%) translateX(15px); }
-        }
-
-        .floating-gun:hover {
-            opacity: 0.8;
-            transform: translateY(-50%) scale(1.05) translateX(15px);
-            filter: drop-shadow(0 0 30px rgba(255, 123, 0, 0.5));
-        }
-
-        .floating-gun.recoil {
-            animation: recoil 0.4s ease-out !important;
-        }
-
-        @keyframes recoil {
-            0% { transform: translateY(-50%) rotate(0deg) translateX(0); }
-            40% { transform: translateY(-50%) rotate(-20deg) translateX(-40px); }
-            100% { transform: translateY(-50%) rotate(0deg) translateX(0); }
-        }
-
         .result-overlay {
             position: fixed;
             top: 0;
@@ -814,46 +752,6 @@
             background: #4a4a4a;
         }
 
-        .gun-selector {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: none;
-            gap: 10px;
-            z-index: 100;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .gun-selector.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .gun-option {
-            width: 80px;
-            height: 80px;
-            cursor: pointer;
-            opacity: 0.5;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            border-radius: 16px;
-            padding: 5px;
-            background-color: #2a2a2a;
-        }
-
-        .gun-option:hover {
-            opacity: 1;
-            border-color: #ff7b00;
-            box-shadow: 0 4px 16px rgba(255, 123, 0, 0.3);
-        }
-
-        .gun-option img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
         .inventory-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -893,17 +791,9 @@
             border-color: #ff7b00;
             background: rgba(255, 123, 0, 0.1);
         }
-
-        @media (max-width: 768px) {
-            .floating-gun {
-                width: 300px;
-            }
-        }
     </style>
 </head>
 <body>
-    <button class="close-btn" id="closeBtn">X</button>
-
     <div class="balance-container">
         <div class="balance-info">
             <div class="balance">Баланс</div>
@@ -990,23 +880,6 @@
         <button class="panel-bet-button" id="panelBetButton">BET</button>
     </div>
 
-    <img src="https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png"
-         alt="Floating Gun"
-         class="floating-gun"
-         id="floatingGun">
-
-    <div class="gun-selector" id="gunSelector">
-        <div class="gun-option" data-gun="0">
-            <img src="https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png" alt="Gun 1">
-        </div>
-        <div class="gun-option" data-gun="1">
-            <img src="https://i.postimg.cc/q7sZX2jq/pngwing-com-Photoroom.png" alt="Gun 2">
-        </div>
-        <div class="gun-option" data-gun="2">
-            <img src="https://i.postimg.cc/QMJ0Whd6/png-klev-club-n906-p-ak47-png-24.png" alt="Gun 3">
-        </div>
-    </div>
-
     <div class="result-overlay" id="resultOverlay">
         <div id="resultContent"></div>
         <div class="button-group">
@@ -1075,12 +948,6 @@
         const STORAGE_KEY = 'roulette_balance';
         const INVENTORY_KEY = 'roulette_inventory';
 
-        const gunImages = [
-            'https://i.postimg.cc/wvSyqsYP/png-klev-club-p-revolver-png-16.png',
-            'https://i.postimg.cc/q7sZX2jq/pngwing-com-Photoroom.png',
-            'https://i.postimg.cc/QMJ0Whd6/png-klev-club-n906-p-ak47-png-24.png'
-        ];
-
         const animations = {
             1: {
                 win: [
@@ -1119,7 +986,6 @@
         let lastBetAmount = 0;
         let gameCount = 0;
         let bonusUsed = false;
-        let currentGun = 0;
         let isPlaying = false;
         let inventory = [];
         let selectedInventoryItem = null;
@@ -1153,7 +1019,6 @@
 
         const balanceEl = document.getElementById('balance');
         const addBalanceBtn = document.getElementById('addBalanceBtn');
-        const closeBtn = document.getElementById('closeBtn');
         const betButton = document.getElementById('betButton');
         const panelBetButton = document.getElementById('panelBetButton');
         const betInput = document.getElementById('betInput');
@@ -1164,7 +1029,6 @@
         const continueButton = document.getElementById('continueButton');
         const bonusButton = document.getElementById('bonusButton');
         const skipBonusButton = document.getElementById('skipBonusButton');
-        const floatingGun = document.getElementById('floatingGun');
         const infoButton = document.getElementById('infoButton');
         const infoModal = document.getElementById('infoModal');
         const depositModal = document.getElementById('depositModal');
@@ -1180,8 +1044,6 @@
         const giftBtn = document.getElementById('giftBtn');
         const withdrawBalance = document.getElementById('withdrawBalance');
         const bulletButtons = document.querySelectorAll('.bullet-btn');
-        const gunSelector = document.getElementById('gunSelector');
-        const gunOptions = document.querySelectorAll('.gun-option');
         const betPanel = document.getElementById('betPanel');
         const modalOverlay = document.getElementById('modalOverlay');
         const handleBar = document.getElementById('handleBar');
@@ -1190,10 +1052,6 @@
         const inventoryContent = document.getElementById('inventoryContent');
 
         updateUI();
-
-        closeBtn.addEventListener('click', () => {
-            window.location.href = 'https://ton-bet-eta.vercel.app/';
-        });
 
         addBalanceBtn.addEventListener('click', () => {
             depositModal.classList.add('show');
@@ -1369,18 +1227,6 @@
             inventoryModal.classList.remove('show');
         });
 
-        floatingGun.addEventListener('click', () => {
-            gunSelector.classList.toggle('show');
-        });
-
-        gunOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                currentGun = parseInt(option.dataset.gun);
-                floatingGun.src = gunImages[currentGun];
-                gunSelector.classList.remove('show');
-            });
-        });
-
         betInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !isPlaying) {
                 playBet();
@@ -1457,14 +1303,7 @@
             animationImg.src = animationUrl;
             animationImg.classList.add('show');
 
-            await sleep(2000);
-
-            if (!isWin) {
-                floatingGun.classList.add('recoil');
-                setTimeout(() => floatingGun.classList.remove('recoil'), 400);
-            }
-
-            await sleep(3000);
+            await sleep(5000);
 
             animationImg.classList.remove('show');
             await sleep(300);
